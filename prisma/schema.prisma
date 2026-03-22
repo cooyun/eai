@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  nameZh    String
+  nameEn    String
+  descZh    String?
+  descEn    String?
+  tools     Tool[]
+  createdAt DateTime @default(now())
+}
+
+model Tool {
+  id          String   @id @default(cuid())
+  name        String
+  url         String
+  logoUrl     String?
+  pricing     String   @default("Freemium")
+  upvotes     Int      @default(0)
+  descZh      String
+  descEn      String
+  freeQuotaZh String?  // 免费额度（中文）
+  freeQuotaEn String?  // 免费额度（英文）
+  tagsZh      String[] // 相关标签（中文数组）
+  tagsEn      String[] // 相关标签（英文数组）
+  githubUrl   String?  // GitHub链接
+  isFeatured  Boolean  @default(false)
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Setting {
+  id              String   @id @default("global")
+  siteName        String   @default("AI Directory")
+  domain          String   @default("YOURDOMAIN.com")
+  contactEmail    String   @default("admin@yourdomain.com")
+  seoDescZh       String   @default("全球顶尖 AI 资产导航")
+  seoDescEn       String   @default("Discover the Best AI Tools")
+  seoKeywords     String   @default("")
+  
+  // 广告相关
+  adSenseCode     String   @default("")
+  adSenseEnabled  Boolean  @default(false)
+
+  customAdEnabled Boolean  @default(false)
+  customAdImageUrl String  @default("")
+  customAdLink    String   @default("")
+  
+  homeAdEnabled   Boolean  @default(true)
+  homeAdCode      String   @default("")
+  homeAdImage     String   @default("")
+  homeAdLink      String   @default("")
+
+  detailAdEnabled Boolean  @default(true)
+  detailAdCode    String   @default("")
+  detailAdImage   String   @default("")
+  detailAdLink    String   @default("")
+
+  sidebarAdEnabled Boolean @default(true)
+  sidebarAdCode   String   @default("")
+  sidebarAdImage  String   @default("")
+  sidebarAdLink   String   @default("")
+  
+  holidayThemeAuto Boolean @default(true)
+
+  // 分析与收录相关 (SEO)
+  googleAnalytics String   @default("")
+  googleVerifyCode String  @default("")
+  bingVerifyCode   String  @default("")
+  baiduVerifyCode  String  @default("")
+
+  updatedAt       DateTime @updatedAt
+}
